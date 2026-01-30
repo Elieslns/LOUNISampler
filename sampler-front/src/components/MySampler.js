@@ -913,7 +913,7 @@ class MySampler extends HTMLElement {
 
   async _fetchPresets() {
     try {
-      const response = await fetch('http://localhost:3000/api/presets');
+      const response = await fetch(`${API_URL}/api/presets`);
       const result = await response.json();
       const select = this.shadowRoot.getElementById('preset-select');
       if (select && result.data) {
@@ -935,7 +935,7 @@ class MySampler extends HTMLElement {
     const presetId = select?.value;
     if (!presetId) return;
     try {
-      const response = await fetch(`http://localhost:3000/api/presets/${presetId}`);
+      const response = await fetch(`${API_URL}/api/presets/${presetId}`);
       const result = await response.json();
       if (result.success && result.data) {
         this._presetData = result.data;
