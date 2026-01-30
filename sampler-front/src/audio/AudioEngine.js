@@ -1,6 +1,7 @@
+/**
  * @author Elies LOUNIS
-    * @version 1.0.0
-        */
+ * @version 1.0.0
+ */
 import { API_URL } from '../config/api-config.js';
 
 // ============================================

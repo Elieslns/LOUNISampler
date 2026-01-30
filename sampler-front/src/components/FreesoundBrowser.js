@@ -1,4 +1,7 @@
- * - sound - selected: { soundId, name, previewUrl }
+/**
+ * <freesound-browser> Web Component
+ * 
+ * @author Elies LOUNIS
  */
 import { API_URL } from '../config/api-config.js';
 
