@@ -1,0 +1,135 @@
+<div class="p-6 lg:p-10 max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-2">
+                {{ isEditMode ? 'Edit Kit' : 'Create New Kit' }}
+            </h1>
+            <p class="text-gray-400 text-sm">Assign samples to the 16 drum pads.</p>
+        </div>
+        <a routerLink="/admin/presets"
+            class="px-4 py-2 border border-white/10 rounded-lg text-gray-300 hover:bg-white/5 transition-all">Cancel</a>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-8 animate-fade-in">
+
+        <!-- Metadata Card -->
+        <div class="glass-panel p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="group">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Kit Name</label>
+                    <input type="text" formControlName="name" placeholder="E.g. Trap Essentials"
+                        class="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-brand-primary focus:outline-none transition-colors">
+                </div>
+                <div class="group">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Category</label>
+                    <select formControlName="category"
+                        class="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-brand-primary focus:outline-none transition-colors appearance-none">
+                        <option value="Drums">Drums</option>
+                        <option value="Melodic">Melodic</option>
+                        <option value="FX">FX</option>
+                        <option value="Experimental">Experimental</option>
+                    </select>
+                </div>
+                <div class="group">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">BPM</label>
+                    <input type="number" formControlName="bpm"
+                        class="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-brand-primary focus:outline-none transition-colors">
+                </div>
+            </div>
+        </div>
+
+        <!-- Pads Grid -->
+        <!-- Pads Grid -->
+        <div>
+            <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <span>🎛️</span> Pad Assignment
+            </h2>
+
+            <div class="max-w-2xl">
+                <div
+                    class="grid grid-cols-4 gap-3 bg-black/40 p-6 rounded-2xl border border-white/5 shadow-2xl aspect-square">
+                    <!-- Render rows from bottom (3) to top (0) to match MPC layout -->
+                    <ng-container *ngFor="let row of [3, 2, 1, 0]">
+                        <ng-container *ngFor="let col of [0, 1, 2, 3]">
+                            <ng-container *ngFor="let p of [pads[row * 4 + col]]">
+                                <div class="aspect-square relative group rounded-xl bg-gradient-to-br from-gray-800 to-black border-2 border-white/5 transition-all hover:border-brand-primary/50"
+                                    [class.border-brand-primary]="p.file || p.sample || p.isExisting">
+
+                                    <!-- Pad Index -->
+                                    <div
+                                        class="absolute top-2 left-2 text-[10px] font-mono text-gray-500 bg-black/50 px-1.5 py-0.5 rounded">
+                                        {{ p.padIndex + 1 }}
+                                    </div>
+
+                                    <!-- Status Indicator -->
+                                    <div class="absolute top-2 right-2 w-2 h-2 rounded-full"
+                                        [ngClass]="(p.file || p.sample || p.isExisting) ? 'bg-brand-primary shadow-[0_0_8px_rgba(34,211,238,0.6)]' : 'bg-gray-700'">
+                                    </div>
+
+                                    <!-- Center Content -->
+                                    <div
+                                        class="absolute inset-0 flex flex-col items-center justify-center p-2 text-center pointer-events-none">
+                                        <div class="text-2xl mb-1 opacity-80">
+                                            {{ (p.file || p.sample || p.isExisting) ? '🎵' : '➕' }}
+                                        </div>
+                                        <div class="text-xs font-bold text-gray-300 truncate w-full px-1">
+                                            {{ p.label }}
+                                        </div>
+                                        <div class="text-[10px] text-brand-cyan truncate w-full" *ngIf="p.sample">
+                                            (Library)
+                                        </div>
+                                        <div class="text-[10px] text-green-400 truncate w-full" *ngIf="p.file">
+                                            (Upload)
+                                        </div>
+                                    </div>
+
+                                    <!-- Hover Actions Overlay -->
+                                    <div
+                                        class="absolute inset-0 bg-black/80 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
+
+                                        <!-- Add from Library -->
+                                        <button type="button" (click)="openPicker(p.padIndex)"
+                                            class="w-full py-1.5 rounded bg-brand-primary/20 text-brand-primary border border-brand-primary/30 text-xs font-bold hover:bg-brand-primary hover:text-black transition-colors">
+                                            📚 Library
+                                        </button>
+
+                                        <!-- Upload File -->
+                                        <label [for]="'file-' + p.padIndex"
+                                            class="w-full py-1.5 rounded bg-white/10 text-white border border-white/20 text-xs font-bold hover:bg-white/20 cursor-pointer text-center transition-colors">
+                                            📤 Upload
+                                        </label>
+                                        <input type="file" [id]="'file-' + p.padIndex"
+                                            (change)="onFileSelected($event, p.padIndex)" accept="audio/*" hidden>
+
+                                        <!-- Clear -->
+                                        <button *ngIf="p.file || p.sample || p.isExisting"
+                                            (click)="clearPad(p.padIndex)"
+                                            class="text-xs text-red-400 hover:text-red-300 mt-1">
+                                            Clear
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Footer -->
+        <div class="flex justify-end pt-4 border-t border-white/10">
+            <button type="submit" class="btn btn-primary px-8 py-3 text-lg shadow-lg shadow-brand-primary/20"
+                [disabled]="form.invalid || submitting">
+                {{ submitting ? 'Saving...' : (isEditMode ? 'Update Kit' : 'Create Kit') }}
+            </button>
+        </div>
+
+    </form>
+
+    <!-- Reusable Picker Modal -->
+    <app-sample-picker *ngIf="showPicker" (selectSample)="onSamplePicked($event)" (cancel)="showPicker = false">
+    </app-sample-picker>
+
+</div>

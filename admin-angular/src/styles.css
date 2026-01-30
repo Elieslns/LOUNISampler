@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-brand-dark text-white font-sans antialiased overflow-x-hidden;
+        background-attachment: fixed;
+    }
+}
+
+@layer components {
+
+    /* Glassmorphism Card */
+    .glass-panel {
+        @apply bg-brand-panel/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl;
+    }
+
+    /* Premium Input */
+    .input-primary {
+        @apply bg-brand-dark/50 border border-white/10 rounded-lg px-4 py-2 w-full focus:outline-none focus:border-brand-primary/50 focus:ring-1 focus:ring-brand-primary/50 transition-all text-sm placeholder-gray-500;
+    }
+
+    /* Primary Button */
+    .btn-primary {
+        @apply bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-medium px-6 py-2.5 rounded-lg shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/40 hover:scale-[1.02] active:scale-95 transition-all text-sm;
+    }
+
+    /* Danger Button */
+    .btn-danger {
+        @apply bg-red-500/10 text-red-400 border border-red-500/20 px-4 py-2 rounded-lg hover:bg-red-500/20 hover:text-red-300 transition-colors text-sm;
+    }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}

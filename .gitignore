@@ -1,0 +1,16 @@
+# Dependencies
+**/node_modules/
+**/dist/
+
+# Environment variables
+**/.env
+
+# Editor directories
+.idea/
+.vscode/
+
+# System files
+.DS_Store
+
+# Angular
+**/.angular/

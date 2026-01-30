@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: lounis-sampler-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGODB_URI
+        fromGroup: shared-secrets
+        sync: false
+      - key: FREESOUND_API_KEY
+        sync: false

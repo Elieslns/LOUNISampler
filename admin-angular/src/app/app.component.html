@@ -1,0 +1,60 @@
+<div class="flex h-screen bg-brand-dark fixed inset-0 overflow-hidden">
+    <!-- Sidebar -->
+    <aside
+        class="w-20 lg:w-64 bg-brand-panel/30 backdrop-blur-xl border-r border-white/5 flex flex-col justify-between transition-all duration-300 z-50">
+
+        <!-- Top Section -->
+        <div>
+            <!-- Logo -->
+            <div class="h-16 flex items-center justify-center lg:justify-start lg:px-6 border-b border-white/5">
+                <div
+                    class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center shadow-lg shadow-brand-primary/20 shrink-0">
+                    <span class="text-white font-bold text-lg">S</span>
+                </div>
+                <span
+                    class="hidden lg:block ml-3 font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                    LOUNISampler Admin
+                </span>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="p-4 space-y-2">
+                <a routerLink="/admin/presets"
+                    routerLinkActive="bg-brand-primary/10 text-brand-primary border-brand-primary/20"
+                    class="flex items-center p-3 text-gray-400 rounded-xl hover:bg-white/5 hover:text-white transition-all border border-transparent group">
+                    <span class="hidden lg:block ml-3 font-medium text-sm">Presets</span>
+                </a>
+
+                <a routerLink="/admin/sequencer-presets"
+                    routerLinkActive="bg-brand-primary/10 text-brand-primary border-brand-primary/20"
+                    class="flex items-center p-3 text-gray-400 rounded-xl hover:bg-white/5 hover:text-white transition-all border border-transparent group">
+                    <span class="hidden lg:block ml-3 font-medium text-sm">Sequencer</span>
+                </a>
+
+                <a routerLink="/admin/samples"
+                    routerLinkActive="bg-brand-primary/10 text-brand-primary border-brand-primary/20"
+                    class="flex items-center p-3 text-gray-400 rounded-xl hover:bg-white/5 hover:text-white transition-all border border-transparent group">
+                    <span class="hidden lg:block ml-3 font-medium text-sm">Samples</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Bottom Section -->
+        <div class="p-4 border-t border-white/5">
+            <a href="http://localhost:5500/sampler-front/" target="_blank"
+                class="flex items-center justify-center lg:justify-start p-3 text-gray-400 hover:text-white rounded-xl hover:bg-white/5 transition-all">
+                <span class="hidden lg:block ml-3 text-sm font-medium">Open Sampler</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto relative scroll-smooth">
+        <!-- Top Bar for Mobile/Tablet could go here -->
+
+        <!-- Content Wrapper -->
+        <div class="min-h-full">
+            <router-outlet></router-outlet>
+        </div>
+    </main>
+</div>
