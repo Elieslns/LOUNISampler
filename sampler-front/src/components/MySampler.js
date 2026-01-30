@@ -24,6 +24,7 @@ import './FreesoundBrowser.js';
 import './SampleLibrary.js';
 import AudioEngine, { AudioEvents } from '../audio/AudioEngine.js';
 import { KEY_TO_PAD } from '../audio/AudioConstants.js';
+import { API_URL } from '../config/api-config.js';
 
 class MySampler extends HTMLElement {
   constructor() {
@@ -391,7 +392,7 @@ class MySampler extends HTMLElement {
             </div>
 
             <!-- Admin Logic -->
-             <a href="${window.location.origin.includes('render.com') ? 'https://lounis-sampler-admin.onrender.com' : 'http://localhost:4200'}" target="_blank" class="btn" style="text-decoration:none; display:flex; align-items:center; margin-right:12px;">🔧 Admin</a>
+             <a href="${API_URL === 'http://localhost:3000' ? 'http://localhost:4200' : 'https://lounis-sampler-admin.onrender.com'}" target="_blank" class="btn" style="text-decoration:none; display:flex; align-items:center; margin-right:12px;">🔧 Admin</a>
 
             <div class="status-led ${this._isInitialized ? 'ready' : ''}" title="Engine Status"></div>
             <button class="btn btn-primary" id="btn-init" ${this._isInitialized ? 'disabled' : ''}>
@@ -891,7 +892,7 @@ class MySampler extends HTMLElement {
 
   async _checkBackend() {
     const statusEl = this.shadowRoot.getElementById('backend-status');
-    const baseUrl = window.SAMPLER_API_URL;
+    const baseUrl = API_URL;
     try {
       const resp = await fetch(`${baseUrl}/api/health`);
       const data = await resp.json();

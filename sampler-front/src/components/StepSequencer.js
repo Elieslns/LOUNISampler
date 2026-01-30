@@ -6,10 +6,11 @@
  * 
  * Événements émis :
  *   - step-toggle: { padIndex, stepIndex, active }
- *   - sequence-change: { padIndex, sequence }
+ * - Syncs with AudioEngine
  */
+import { API_URL } from '../config/api-config.js';
 
-class StepSequencer extends HTMLElement {
+export class StepSequencer extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
@@ -516,7 +517,7 @@ class StepSequencer extends HTMLElement {
 
     // Save to Backend
     try {
-      const baseUrl = window.SAMPLER_API_URL;
+      const baseUrl = API_URL;
       const res = await fetch(`${baseUrl}/api/sequencer-presets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -81,16 +81,8 @@
   <!-- Main Sampler Component (rendered by JS) -->
   <my-sampler id="sampler" style="display: none;"></my-sampler>
 
+  <script type="module" src="./src/components/MySampler.js"></script>
   <script type="module">
-    // Configure API URL
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    window.SAMPLER_API_URL = isLocal
-      ? 'http://localhost:3000'
-      : 'https://lounis-sampler-backend.onrender.com';
-
-    // Import the main sampler component
-    import './src/components/MySampler.js';
-
     // Hide loading, show sampler
     document.getElementById('loading').style.display = 'none';
     document.getElementById('sampler').style.display = 'block';

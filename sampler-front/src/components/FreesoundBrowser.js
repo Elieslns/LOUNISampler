@@ -10,8 +10,9 @@
  * 
  * Événements émis :
  *   - sound-selected: { soundId, name, previewUrl }
- *   - assign-to-pad: { padIndex, soundData }
+ * Side panel component to search and preview samples from Freesound.org API.
  */
+import { API_URL } from '../config/api-config.js';
 
 class FreesoundBrowser extends HTMLElement {
   constructor() {
@@ -423,7 +424,7 @@ class FreesoundBrowser extends HTMLElement {
     this._setupEventListeners();
 
     try {
-      const baseUrl = window.SAMPLER_API_URL;
+      const baseUrl = API_URL;
       const response = await fetch(`${baseUrl}/api/freesound/proxy/search?query=${encodeURIComponent(this._searchQuery)}`);
       const data = await response.json();
       console.log('Freesound API response:', data);

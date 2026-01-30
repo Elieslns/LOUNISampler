@@ -4,6 +4,8 @@
  * Side panel component to browse and drag-and-drop independent samples.
  * Fetches data from /api/samples.
  */
+import { API_URL } from '../config/api-config.js';
+
 export class SampleLibrary extends HTMLElement {
     constructor() {
         super();
@@ -21,7 +23,7 @@ export class SampleLibrary extends HTMLElement {
 
     async loadSamples() {
         try {
-            const baseUrl = window.SAMPLER_API_URL;
+            const baseUrl = API_URL;
             const url = this.currentCategory === 'All'
                 ? `${baseUrl}/api/samples`
                 : `${baseUrl}/api/samples?category=${this.currentCategory}`;
@@ -146,7 +148,7 @@ export class SampleLibrary extends HTMLElement {
             return;
         }
 
-        const baseUrl = 'http://localhost:3000';
+        const baseUrl = API_URL;
         container.innerHTML = this.samples.map(sample => {
             // If sample.path starts with /, prepend backend url
             // If sample.url is present, use it directly (Freesound)

@@ -100,13 +100,6 @@ Serveur Node.js/Express qui sert les données et les fichiers statiques.
     *   `models/Preset.js` : Modèle de données pour un kit complet.
 *   `public/uploads/` : Dossier où sont stockés physiquement les fichiers audio uploadés.
 
-## Assistance IA & Développement
-
-Ce projet a été développé avec l'aide de modèles d'IA avancés :
-
-*   **Gemini 3 Pro** : Utilisé pour la planification de haut niveau du projet, la conception architecturale et la conceptualisation UI/UX.
-*   **Claude Opus 4.5** : Utilisé pour l'exécution de l'implémentation logique complexe (Séquenceur, Audio Engine).
-
 ## Démarrage
 
 Suivez ces étapes pour lancer le projet localement.

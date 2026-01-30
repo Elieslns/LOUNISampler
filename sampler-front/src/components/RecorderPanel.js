@@ -11,6 +11,7 @@
  *   - recording-complete: { audioBuffer, slices }
  *   - slice-to-pad: { padIndex, buffer }
  */
+import { API_URL } from '../config/api-config.js';
 
 class RecorderPanel extends HTMLElement {
   constructor() {
@@ -835,7 +836,7 @@ class RecorderPanel extends HTMLElement {
     formData.append('name', name);
     formData.append('category', category);
 
-    const res = await fetch(`${window.SAMPLER_API_URL}/api/samples`, {
+    const res = await fetch(`${API_URL}/api/samples`, {
       method: 'POST',
       body: formData
     });

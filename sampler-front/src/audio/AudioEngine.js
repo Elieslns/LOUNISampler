@@ -239,7 +239,7 @@ class AudioEngine extends EventTarget {
                     // Build full URL from base URL + partial path
                     // MongoDB stores only the path (e.g., /uploads/kick.mp3)
                     // Frontend reconstructs: API_URL + /uploads/kick.mp3
-                    const baseUrl = window.SAMPLER_API_URL || 'https://lounis-sampler-backend.onrender.com';
+                    const baseUrl = API_URL;
                     const url = samplePath.startsWith('http') ? samplePath : `${baseUrl}${samplePath}`;
 
                     const response = await fetch(url);
