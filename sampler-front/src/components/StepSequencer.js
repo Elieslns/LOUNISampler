@@ -443,7 +443,7 @@ export class StepSequencer extends HTMLElement {
     if (samples) {
       samples.forEach(sample => {
         if (sample.sequence) {
-          this._sequences.set(sample.padIndex, [...sample.sequence]);
+          this._sequences.set(Number(sample.padIndex), [...sample.sequence]);
         }
       });
     }
