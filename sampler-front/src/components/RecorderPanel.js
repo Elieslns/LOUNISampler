@@ -12,7 +12,7 @@
  *   - slice-to-pad: { padIndex, buffer }
  */
 import { API_URL } from '../config/api-config.js';
-import audioEngine from '../audio/audioEngine.js';
+import audioEngine from '../audio/AudioEngine.js';
 
 class RecorderPanel extends HTMLElement {
   constructor() {
