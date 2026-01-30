@@ -22,9 +22,12 @@ import './StepSequencer.js';
 import './RecorderPanel.js';
 import './FreesoundBrowser.js';
 import './SampleLibrary.js';
-import AudioEngine, { AudioEvents } from '../audio/AudioEngine.js';
+import audioEngine, { AudioEvents } from '../audio/AudioEngine.js';
 import { KEY_TO_PAD } from '../audio/AudioConstants.js';
 import { API_URL } from '../config/api-config.js';
+
+console.log('🚀 LOUNISampler: API_URL set to', API_URL);
+console.log('🎛️ LOUNISampler: AudioEngine instance:', audioEngine);
 
 class MySampler extends HTMLElement {
   constructor() {
@@ -519,7 +522,7 @@ class MySampler extends HTMLElement {
     // Recorder: Slice to Pad
     this.shadowRoot.addEventListener('slice-to-pad', (e) => {
       const { padIndex, buffer, label } = e.detail;
-      AudioEngine.loadSampleFromBuffer(padIndex, buffer, label);
+      audioEngine.loadSampleFromBuffer(padIndex, buffer, label);
 
       // Update Pad UI
       const padGrid = this.shadowRoot.getElementById('pad-grid');
@@ -537,7 +540,7 @@ class MySampler extends HTMLElement {
       padGrid?.triggerPadLoading(padIndex);
 
       try {
-        await AudioEngine.loadSampleFromUrl(padIndex, url, name);
+        await audioEngine.loadSampleFromUrl(padIndex, url, name);
 
         // Update Pad UI optimistic
         padGrid?.setPadLoaded(padIndex, name);
@@ -557,7 +560,7 @@ class MySampler extends HTMLElement {
       if (recorder) {
         const buffer = recorder.getSliceBuffer(sliceIndex);
         if (buffer) {
-          AudioEngine.loadSampleFromBuffer(padIndex, buffer, label);
+          audioEngine.loadSampleFromBuffer(padIndex, buffer, label);
           const padGrid = this.shadowRoot.getElementById('pad-grid');
           padGrid?.setPadLoaded(padIndex, label);
         }
@@ -574,7 +577,7 @@ class MySampler extends HTMLElement {
     // Stop from control rack
     this.shadowRoot.addEventListener('stop-pad', (e) => {
       if (this._isInitialized && e.detail.padIndex !== null) {
-        AudioEngine.stopPad(e.detail.padIndex);
+        audioEngine.stopPad(e.detail.padIndex);
         const waveform = this.shadowRoot.getElementById('waveform');
         waveform?.stopPlayback();
 
@@ -586,7 +589,7 @@ class MySampler extends HTMLElement {
     // Trim change from waveform
     this.shadowRoot.addEventListener('trim-change', (e) => {
       if (this._selectedPadId !== null) {
-        AudioEngine.setPadTrim(this._selectedPadId, e.detail.trimStart, e.detail.trimEnd);
+        audioEngine.setPadTrim(this._selectedPadId, e.detail.trimStart, e.detail.trimEnd);
       }
     });
 
@@ -604,7 +607,7 @@ class MySampler extends HTMLElement {
     // BPM input
     const bpmInput = this.shadowRoot.getElementById('bpm-input');
     bpmInput?.addEventListener('change', (e) => {
-      AudioEngine.setBPM(parseInt(e.target.value));
+      audioEngine.setBPM(parseInt(e.target.value));
     });
 
     // Preset selector
@@ -620,16 +623,16 @@ class MySampler extends HTMLElement {
   }
 
   _setupAudioEngineListeners() {
-    AudioEngine.addEventListener(AudioEvents.ENGINE_READY, this._handleEngineReady);
+    audioEngine.addEventListener(AudioEvents.ENGINE_READY, this._handleEngineReady);
 
     // Sample loaded: update Waveform if selected
-    AudioEngine.addEventListener(AudioEvents.SAMPLE_LOADED, (e) => {
+    audioEngine.addEventListener(AudioEvents.SAMPLE_LOADED, (e) => {
       this._handleSampleLoaded(e);
 
       // If the loaded sample corresponds to the currently selected pad, update waveform
       if (this._selectedPadId === e.detail.padIndex) {
         const waveform = this.shadowRoot.getElementById('waveform');
-        const bufferData = AudioEngine.getBuffer(e.detail.padIndex);
+        const bufferData = audioEngine.getBuffer(e.detail.padIndex);
         if (waveform && bufferData) {
           waveform.setBuffer(bufferData.buffer, e.detail.label);
         }
@@ -639,14 +642,14 @@ class MySampler extends HTMLElement {
       this._updateSequencerPadStatus(e.detail.padIndex, true, e.detail.label);
     });
 
-    AudioEngine.addEventListener(AudioEvents.PRESET_LOADED, this._handlePresetLoaded);
-    AudioEngine.addEventListener(AudioEvents.MIDI_NOTE, this._handleMidiNote);
-    AudioEngine.addEventListener(AudioEvents.SEQUENCER_TICK, this._handleSequencerTick);
-    AudioEngine.addEventListener(AudioEvents.SEQUENCER_START, () => {
+    audioEngine.addEventListener(AudioEvents.PRESET_LOADED, this._handlePresetLoaded);
+    audioEngine.addEventListener(AudioEvents.MIDI_NOTE, this._handleMidiNote);
+    audioEngine.addEventListener(AudioEvents.SEQUENCER_TICK, this._handleSequencerTick);
+    audioEngine.addEventListener(AudioEvents.SEQUENCER_START, () => {
       this._isSequencerPlaying = true;
       this._updateSequencerUI();
     });
-    AudioEngine.addEventListener(AudioEvents.SEQUENCER_STOP, () => {
+    audioEngine.addEventListener(AudioEvents.SEQUENCER_STOP, () => {
       this._isSequencerPlaying = false;
       this._updateSequencerUI();
       const sequencer = this.shadowRoot.getElementById('step-sequencer');
@@ -665,9 +668,9 @@ class MySampler extends HTMLElement {
 
   _toggleSequencer() {
     if (this._isSequencerPlaying) {
-      AudioEngine.stopSequencer();
+      audioEngine.stopSequencer();
     } else {
-      AudioEngine.startSequencer();
+      audioEngine.startSequencer();
     }
   }
 
@@ -686,7 +689,7 @@ class MySampler extends HTMLElement {
       btnInit.textContent = '...';
       btnInit.disabled = true;
     }
-    await AudioEngine.init();
+    await audioEngine.init();
   }
 
   _handleEngineReady() {
@@ -733,9 +736,9 @@ class MySampler extends HTMLElement {
   }
 
   _playPadWithWaveform(padId, velocity) {
-    AudioEngine.playPad(padId, velocity);
+    audioEngine.playPad(padId, velocity);
     const waveform = this.shadowRoot.getElementById('waveform');
-    const bufferData = AudioEngine.getBuffer(padId);
+    const bufferData = audioEngine.getBuffer(padId);
 
     // Use stored label or buffer config, or fallback
     let label = `Pad ${padId}`;
@@ -766,10 +769,10 @@ class MySampler extends HTMLElement {
     const { padIndex, param, value } = event.detail;
     if (padIndex === null) return;
     switch (param) {
-      case 'volume': AudioEngine.setPadVolume(padIndex, value); break;
-      case 'pitch': AudioEngine.setPadPlaybackRate(padIndex, value); break;
-      case 'pan': AudioEngine.setPadPan(padIndex, value); break;
-      case 'reverse': AudioEngine.setPadReverse(padIndex, value); break;
+      case 'volume': audioEngine.setPadVolume(padIndex, value); break;
+      case 'pitch': audioEngine.setPadPlaybackRate(padIndex, value); break;
+      case 'pan': audioEngine.setPadPan(padIndex, value); break;
+      case 'reverse': audioEngine.setPadReverse(padIndex, value); break;
     }
   }
 
@@ -781,7 +784,7 @@ class MySampler extends HTMLElement {
 
     // If not in preset, check if loaded manually (buffer)
     if (!sample) {
-      const bufferData = AudioEngine.getBuffer(this._selectedPadId);
+      const bufferData = audioEngine.getBuffer(this._selectedPadId);
       if (bufferData?.config) {
         sample = bufferData.config;
       }
@@ -887,7 +890,7 @@ class MySampler extends HTMLElement {
 
   _handleStepToggle(event) {
     const { padIndex, stepIndex, active } = event.detail;
-    AudioEngine.toggleStep(padIndex, stepIndex);
+    audioEngine.toggleStep(padIndex, stepIndex);
   }
 
   async _checkBackend() {
@@ -939,7 +942,7 @@ class MySampler extends HTMLElement {
       const result = await response.json();
       if (result.success && result.data) {
         this._presetData = result.data;
-        await AudioEngine.loadPreset(result.data);
+        await audioEngine.loadPreset(result.data);
       }
     } catch (error) {
       console.error('Failed to load preset:', error);

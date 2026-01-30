@@ -890,6 +890,6 @@ class AudioEngine extends EventTarget {
 }
 
 // Export singleton instance
-const audioContext = AudioEngine.getInstance();
+const audioEngine = AudioEngine.getInstance();
 export { AudioEvents };
-export default audioContext;
+export default audioEngine;
