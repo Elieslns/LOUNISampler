@@ -553,7 +553,8 @@ export class StepSequencer extends HTMLElement {
     if (preset.sequences) {
       preset.sequences.forEach(item => {
         // item is { padIndex, steps }
-        this._sequences.set(item.padIndex, item.steps);
+        const idx = Number(item.padIndex);
+        this._sequences.set(idx, item.steps);
       });
     }
 

@@ -245,7 +245,8 @@ class AudioEngine extends EventTarget {
                     const audioBuffer = await this.#audioContext.decodeAudioData(arrayBuffer);
 
                     // Store buffer
-                    this.#buffers.set(sample.padIndex, {
+                    const idx = Number(sample.padIndex);
+                    this.#buffers.set(idx, {
                         buffer: audioBuffer,
                         config: sample
                     });
@@ -254,10 +255,10 @@ class AudioEngine extends EventTarget {
                     const padGain = this.#audioContext.createGain();
                     padGain.gain.value = sample.volume || 1.0;
                     padGain.connect(this.#masterGain);
-                    this.#padGains.set(sample.padIndex, padGain);
+                    this.#padGains.set(idx, padGain);
 
                     this.#emit(AudioEvents.SAMPLE_LOADED, {
-                        padIndex: sample.padIndex,
+                        padIndex: idx,
                         label: sample.label,
                         duration: audioBuffer.duration
                     });
@@ -723,18 +724,32 @@ class AudioEngine extends EventTarget {
      * @param {boolean[]} sequence - Array of 16 booleans
      */
     setSequence(padIndex, sequence) {
-        this.#sequences.set(padIndex, sequence);
+        this.#sequences.set(Number(padIndex), [...sequence]);
     }
 
     /**
-     * Toggle a step in a sequence
+     * Set a specific step for a pad
+     * @param {number} padIndex
+     * @param {number} stepIndex
+     * @param {boolean} active
+     */
+    setStep(padIndex, stepIndex, active) {
+        const idx = Number(padIndex);
+        const sequence = this.#sequences.get(idx) || Array(16).fill(false);
+        sequence[stepIndex] = !!active;
+        this.#sequences.set(idx, sequence);
+    }
+
+    /**
+     * Toggle a step in a sequence (Legacy, prefer setStep)
      * @param {number} padIndex
      * @param {number} stepIndex
      */
     toggleStep(padIndex, stepIndex) {
-        const sequence = this.#sequences.get(padIndex) || Array(16).fill(false);
+        const idx = Number(padIndex);
+        const sequence = this.#sequences.get(idx) || Array(16).fill(false);
         sequence[stepIndex] = !sequence[stepIndex];
-        this.#sequences.set(padIndex, sequence);
+        this.#sequences.set(idx, sequence);
         return sequence[stepIndex];
     }
 
@@ -874,7 +889,7 @@ class AudioEngine extends EventTarget {
      * @returns {Object} { buffer, config }
      */
     getBuffer(padIndex) {
-        return this.#buffers.get(padIndex);
+        return this.#buffers.get(Number(padIndex));
     }
 
     /**

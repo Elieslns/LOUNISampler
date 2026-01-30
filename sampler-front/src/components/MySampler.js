@@ -896,7 +896,7 @@ class MySampler extends HTMLElement {
 
   _handleStepToggle(event) {
     const { padIndex, stepIndex, active } = event.detail;
-    audioEngine.toggleStep(padIndex, stepIndex);
+    audioEngine.setStep(padIndex, stepIndex, active);
   }
 
   async _checkBackend() {
