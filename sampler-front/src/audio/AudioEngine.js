@@ -220,6 +220,11 @@ class AudioEngine extends EventTarget {
                 this.updateEffect('delay', preset.fx.delayAmount || 0);
             }
 
+            // Pre-initialize sequences for all samples so the sequencer is ready immediately
+            preset.samples.forEach(sample => {
+                this.#sequences.set(sample.padIndex, sample.sequence || Array(16).fill(false));
+            });
+
             // Load each sample
             const loadPromises = preset.samples.map(async (sample) => {
                 // Support both 'path' (recommended) and 'url' (legacy) fields
@@ -244,9 +249,6 @@ class AudioEngine extends EventTarget {
                         buffer: audioBuffer,
                         config: sample
                     });
-
-                    // Store sequence
-                    this.#sequences.set(sample.padIndex, sample.sequence || Array(16).fill(false));
 
                     // Create pad gain node
                     const padGain = this.#audioContext.createGain();

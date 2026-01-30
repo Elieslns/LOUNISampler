@@ -516,6 +516,12 @@ class MySampler extends HTMLElement {
     // Step toggle from sequencer
     this.shadowRoot.addEventListener('step-toggle', this._handleStepToggle);
 
+    // Sequence change from sequencer (e.g. from preset)
+    this.shadowRoot.addEventListener('sequence-change', (e) => {
+      const { padIndex, sequence } = e.detail;
+      audioEngine.setSequence(padIndex, sequence);
+    });
+
     // Control changes
     this.shadowRoot.addEventListener('control-change', this._handleControlChange);
 
