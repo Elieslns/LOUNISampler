@@ -867,6 +867,15 @@ class AudioEngine extends EventTarget {
     }
 
     /**
+     * Get buffer for a pad
+     * @param {number} padIndex
+     * @returns {Object} { buffer, config }
+     */
+    getBuffer(padIndex) {
+        return this.#buffers.get(padIndex);
+    }
+
+    /**
      * Get current analyser data
      */
     getAnalyserData() {
