@@ -391,7 +391,7 @@ class MySampler extends HTMLElement {
             </div>
 
             <!-- Admin Logic -->
-             <a href="http://localhost:4200/admin" target="_blank" class="btn" style="text-decoration:none; display:flex; align-items:center; margin-right:12px;">🔧 Admin</a>
+             <a href="${window.location.origin.includes('render.com') ? 'https://lounis-sampler-admin.onrender.com' : 'http://localhost:4200'}" target="_blank" class="btn" style="text-decoration:none; display:flex; align-items:center; margin-right:12px;">🔧 Admin</a>
 
             <div class="status-led ${this._isInitialized ? 'ready' : ''}" title="Engine Status"></div>
             <button class="btn btn-primary" id="btn-init" ${this._isInitialized ? 'disabled' : ''}>
@@ -891,9 +891,10 @@ class MySampler extends HTMLElement {
 
   async _checkBackend() {
     const statusEl = this.shadowRoot.getElementById('backend-status');
+    const baseUrl = window.SAMPLER_API_URL;
     try {
-      const response = await fetch('http://localhost:3000/api/health');
-      const data = await response.json();
+      const resp = await fetch(`${baseUrl}/api/health`);
+      const data = await resp.json();
       if (data.status === 'ok') {
         if (statusEl) {
           statusEl.textContent = `✓ Connected (DB: ${data.mongodb})`;

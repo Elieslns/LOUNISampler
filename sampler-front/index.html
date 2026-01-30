@@ -83,7 +83,10 @@
 
   <script type="module">
     // Configure API URL
-    window.SAMPLER_API_URL = 'http://localhost:3000';
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    window.SAMPLER_API_URL = isLocal
+      ? 'http://localhost:3000'
+      : 'https://lounis-sampler-backend.onrender.com';
 
     // Import the main sampler component
     import './src/components/MySampler.js';

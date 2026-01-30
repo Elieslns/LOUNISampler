@@ -1,4 +1,4 @@
-# LOUNISampler 2026
+# LOUNISampler
 
 **LOUNISampler** est un projet réalisé par **Elies LOUNIS** dans le cadre de l'UE "Web" de mon Master 1 Informatique à l'Université Côte d'Azur, sous la supervision de l'enseignant Michel BUFFA.
 
@@ -84,29 +84,28 @@ Application Angular permettant à l'administrateur de gérer le contenu de l'app
 *   `src/app/services/` : Services pour communiquer avec le backend API.
     *   `preset.service.ts` : Appels API pour les presets.
     *   `sample.service.ts` : Appels API pour les samples.
+*   `src/app/services/sequencer-preset.service.ts` : Appels API pour les séquences.
 
 ### 3. backend (Serveur API & Base de Données)
 
 Serveur Node.js/Express qui sert les données et les fichiers statiques.
 
 *   `server.js` : Point d'entrée du serveur. Initialise Express, la connexion MongoDB et les middlewares (CORS, body-parser).
-*   `render.yaml` : Configuration pour le déploiement sur la plateforme Render.
 *   `routes/` : Définition des endpoints API.
     *   `routes/presets.js` : Routes pour créer, lire, mettre à jour et supprimer les kits (presets).
     *   `routes/samples.js` : Routes pour la gestion des fichiers audio bruts.
-    *   `routes/freesound.js` : Proxy pour les requêtes vers l'API externe Freesound (pour cacher la clé API).
+    *   `routes/freesound.js` : Proxy pour les requêtes vers l'API externe Freesound.
     *   `routes/sequencer-presets.js` : Routes pour sauvegarder/charger les séquences.
 *   `models/` : Schémas Mongoose définissant la structure des données dans MongoDB.
-    *   `models/Preset.js` : Modèle de données pour un kit complet (nom, BPM, liste de samples associés aux pads).
-*   `public/uploads/` : Dossier où sont stockés physiquement les fichiers audio uploadés par l'admin.
+    *   `models/Preset.js` : Modèle de données pour un kit complet.
+*   `public/uploads/` : Dossier où sont stockés physiquement les fichiers audio uploadés.
 
 ## Assistance IA & Développement
 
 Ce projet a été développé avec l'aide de modèles d'IA avancés :
 
-*   **Gemini 3 Pro** : Utilisé pour la planification de haut niveau du projet, la conception architecturale et la conceptualisation UI/UX. Il a aidé à structurer le plan d'implémentation et à fournir les design tokens initiaux pour l'interface.
-*   **Claude Opus 4.5** : Utilisé pour l'exécution de l'implémentation logique complexe, spécifiquement pour le moteur du Séquenceur Pas à Pas et la fonctionnalité d'Enregistrement Audio. Il a géré la gestion d'état complexe et la logique de timing requise pour le séquenceur.
-*   **Assistance Générale** : Ils ont été utilisés pour déboguer des problèmes spécifiques et affiner des extraits de code tout au long du processus de développement.
+*   **Gemini 3 Pro** : Utilisé pour la planification de haut niveau du projet, la conception architecturale et la conceptualisation UI/UX.
+*   **Claude Opus 4.5** : Utilisé pour l'exécution de l'implémentation logique complexe (Séquenceur, Audio Engine).
 
 ## Démarrage
 
@@ -114,8 +113,8 @@ Suivez ces étapes pour lancer le projet localement.
 
 ### Prérequis
 *   **Node.js** (v18 ou supérieur)
-*   **Compte MongoDB Atlas** (ou une instance MongoDB locale)
-*   **Clé API Freesound** (optionnel, pour la fonctionnalité de recherche)
+*   **Compte MongoDB Atlas**
+*   **Clé API Freesound**
 
 ### Installation
 
@@ -129,33 +128,29 @@ Suivez ces étapes pour lancer le projet localement.
     ```bash
     cd backend
     npm install
-    # Créez un fichier .env basé sur .env.example (ou utilisez les identifiants fournis)
+    # Créez un fichier .env (MONGODB_URI, FREESOUND_API_KEY)
     npm start
     ```
     *Le serveur backend démarrera sur le port 3000.*
 
 3.  **Configuration du Panneau Admin :**
     ```bash
-    # Ouvrez un nouveau terminal
     cd admin-angular
     npm install
     npm start
     ```
-    *Le tableau de bord admin sera disponible à l'adresse `http://localhost:4200`.*
+    *Le tableau de bord admin sera disponible à l'adresse http://localhost:4200.*
 
 4.  **Lancement du Frontend Sampler :**
-    *   Ouvrez le dossier `sampler-front` dans Visual Studio Code.
-    *   Faites un clic droit sur `index.html` et sélectionnez **"Open with Live Server"**.
-    *   *Le sampler s'ouvrira à l'adresse `http://localhost:5500` (ou un port similaire).*
+    *   Ouvrez `sampler-front/index.html` avec **Live Server**.
+    *   *Le sampler s'ouvrira à l'adresse http://localhost:5500.*
 
 ## Raccourcis Clavier (Configuration AZERTY)
 
-Le sampler est optimisé pour le jeu au clavier utilisant une configuration AZERTY :
-
-*   **Rangée Supérieure (Pads 12-15)** : `&`, `é`, `"`, `'`
-*   **Rangée Haute (Pads 8-11)** : `A`, `Z`, `E`, `R`
-*   **Rangée Milieu (Pads 4-7)** : `Q`, `S`, `D`, `F`
-*   **Rangée Basse (Pads 0-3)** : `W`, `X`, `C`, `V`
+*   **Pads 12-15** : `&`, `é`, `"`, `'`
+*   **Pads 8-11** : `A`, `Z`, `E`, `R`
+*   **Pads 4-7** : `Q`, `S`, `D`, `F`
+*   **Pads 0-3** : `W`, `X`, `C`, `V`
 
 ---
 *Réalisé par Elies LOUNIS pour le projet de Master 1 Info.*

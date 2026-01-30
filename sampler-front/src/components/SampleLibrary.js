@@ -21,7 +21,7 @@ export class SampleLibrary extends HTMLElement {
 
     async loadSamples() {
         try {
-            const baseUrl = 'http://localhost:3000';
+            const baseUrl = window.SAMPLER_API_URL;
             const url = this.currentCategory === 'All'
                 ? `${baseUrl}/api/samples`
                 : `${baseUrl}/api/samples?category=${this.currentCategory}`;

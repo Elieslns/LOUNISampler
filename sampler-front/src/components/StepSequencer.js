@@ -516,7 +516,8 @@ class StepSequencer extends HTMLElement {
 
     // Save to Backend
     try {
-      const res = await fetch('http://localhost:3000/api/sequencer-presets', {
+      const baseUrl = window.SAMPLER_API_URL;
+      const res = await fetch(`${baseUrl}/api/sequencer-presets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_URL } from '../config/api.config';
 
 export interface SequencerPreset {
     _id: string;
@@ -14,7 +15,7 @@ export interface SequencerPreset {
     providedIn: 'root'
 })
 export class SequencerPresetService {
-    private apiUrl = 'http://localhost:3000/api/sequencer-presets';
+    private apiUrl = `${API_URL}/api/sequencer-presets`;
 
     constructor(private http: HttpClient) { }
 

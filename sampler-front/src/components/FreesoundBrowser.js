@@ -423,9 +423,8 @@ class FreesoundBrowser extends HTMLElement {
     this._setupEventListeners();
 
     try {
-      const response = await fetch(
-        `${this._apiBaseUrl}/freesound/search?query=${encodeURIComponent(this._searchQuery)}`
-      );
+      const baseUrl = window.SAMPLER_API_URL;
+      const response = await fetch(`${baseUrl}/api/freesound/proxy/search?query=${encodeURIComponent(this._searchQuery)}`);
       const data = await response.json();
       console.log('Freesound API response:', data);
 

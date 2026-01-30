@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Preset } from '../models/preset';
+import { API_URL } from '../config/api.config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PresetService {
-  private apiUrl = '/api/presets';
+  private apiUrl = `${API_URL}/api/presets`;
 
   constructor(private http: HttpClient) { }
 

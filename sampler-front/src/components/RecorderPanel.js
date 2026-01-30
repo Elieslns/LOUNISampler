@@ -835,7 +835,7 @@ class RecorderPanel extends HTMLElement {
     formData.append('name', name);
     formData.append('category', category);
 
-    const res = await fetch('http://localhost:3000/api/samples', {
+    const res = await fetch(`${window.SAMPLER_API_URL}/api/samples`, {
       method: 'POST',
       body: formData
     });
