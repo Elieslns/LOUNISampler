@@ -1,16 +1,4 @@
-/**
- * <freesound-browser> Web Component
- * 
- * Interface de recherche pour Freesound avec :
- * - Input de recherche
- * - Liste de résultats avec bouton Play (preview sans charger)
- * - Bouton "Assign to Selected Pad"
- * 
- * Utilise le backend comme proxy pour l'API Freesound
- * 
- * Événements émis :
- *   - sound-selected: { soundId, name, previewUrl }
- * Side panel component to search and preview samples from Freesound.org API.
+ * - sound - selected: { soundId, name, previewUrl }
  */
 import { API_URL } from '../config/api-config.js';
 
@@ -29,7 +17,7 @@ class FreesoundBrowser extends HTMLElement {
     this._currentlyPlaying = null;
 
     // API base URL
-    this._apiBaseUrl = 'http://localhost:3000/api';
+    this._apiBaseUrl = `${API_URL}/api`;
   }
 
   connectedCallback() {

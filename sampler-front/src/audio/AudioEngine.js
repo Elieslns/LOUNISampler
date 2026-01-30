@@ -1,15 +1,7 @@
-/**
- * LOUNISampler - Core Audio Engine
- * 
- * Moteur audio "headless" indépendant de l'interface graphique.
- * Utilise Web Audio API pour le playback, les effets et le séquenceur.
- * 
- * Architecture du Graph Audio:
- * SourceNode → PadGain → MasterGain → AnalyserNode → ConvolverNode (Reverb) → Destination
- * 
- * @author LOUNISampler Team
- * @version 1.0.0
- */
+ * @author Elies LOUNIS
+    * @version 1.0.0
+        */
+import { API_URL } from '../config/api-config.js';
 
 // ============================================
 // EVENT TYPES

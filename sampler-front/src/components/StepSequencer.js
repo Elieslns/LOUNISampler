@@ -489,7 +489,7 @@ export class StepSequencer extends HTMLElement {
    */
   async _loadSavedPresetsFromStorage() {
     try {
-      const res = await fetch('http://localhost:3000/api/sequencer-presets');
+      const res = await fetch(`${API_URL}/api/sequencer-presets`);
       const data = await res.json();
       if (data.success) {
         this._savedPresets = data.data;
