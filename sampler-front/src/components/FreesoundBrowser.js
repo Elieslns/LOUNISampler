@@ -1,10 +1,9 @@
-/**
- * <freesound-browser> Web Component
- * 
- * @author Elies LOUNIS
- */
 import { API_URL } from '../config/api-config.js';
 
+/**
+ * <freesound-browser> Web Component
+ * @author Elies LOUNIS
+ */
 class FreesoundBrowser extends HTMLElement {
   constructor() {
     super();
@@ -330,7 +329,7 @@ class FreesoundBrowser extends HTMLElement {
             <div class="result-item ${this._selectedSound?.id === sound.id ? 'selected' : ''}" 
                  data-id="${sound.id}">
               <button class="result-play ${this._currentlyPlaying === sound.id ? 'playing' : ''}" 
-                      data-preview="${sound.previews?.mp3 || sound.previews?.lq_mp3 || sound.previews?.['preview-hq-mp3'] || ''}"
+                       data-preview="${sound.previews?.mp3 || sound.previews?.lq_mp3 || sound.previews?.['preview-hq-mp3'] || ''}"
                       data-id="${sound.id}">
                 ${this._currentlyPlaying === sound.id ? '■' : '▶'}
               </button>

@@ -1,12 +1,10 @@
-/**
- * @author Elies LOUNIS
- * @version 1.0.0
- */
 import { API_URL } from '../config/api-config.js';
 
-// ============================================
-// EVENT TYPES
-// ============================================
+/**
+ * LOUNISampler - Core Audio Engine
+ * Independent headless audio engine.
+ * @author Elies LOUNIS
+ */
 export const AudioEvents = {
     ENGINE_READY: 'engine:ready',
     SAMPLE_LOADED: 'sample:loaded',
@@ -803,45 +801,34 @@ class AudioEngine extends EventTarget {
     }
 
     /**
-     * Handle incoming MIDI messages
+     * Handle incoming MIDI message
      */
     #handleMIDIMessage(event) {
         const [status, note, velocity] = event.data;
+        const command = status & 0xF0;
 
-        // Note On (144-159)
-        if (status >= 144 && status <= 159 && velocity > 0) {
-            // Map MIDI notes to pads (C3 = 48 → pad 0, up to D#4 = 63 → pad 15)
-            const padIndex = note - 48;
+        if (command === 0x90 && velocity > 0) { // Note On
+            // Map MIDI note to Pad (simple mod 16)
+            const padIndex = note % 16;
+            const normalizedVelocity = velocity / 127;
+            this.playPad(padIndex, normalizedVelocity);
 
-            if (padIndex >= 0 && padIndex < 16) {
-                const normalizedVelocity = velocity / 127;
-                this.playPad(padIndex, normalizedVelocity);
-                this.#emit(AudioEvents.MIDI_NOTE, {
-                    note,
-                    velocity: normalizedVelocity,
-                    padIndex
-                });
-            }
+            this.#emit(AudioEvents.MIDI_NOTE, { padIndex, note, velocity: normalizedVelocity });
         }
     }
 
     // ============================================
-    // RECORDER
+    // RECORDING
     // ============================================
 
     /**
-     * Start recording
+     * Start recording output
      */
     startRecording() {
-        if (!this.#mediaStreamDest) {
-            console.error('MediaStreamDestination not available');
-            return false;
-        }
+        if (!this.#isInitialized || !this.#mediaStreamDest) return;
 
         this.#recordedChunks = [];
-        this.#mediaRecorder = new MediaRecorder(this.#mediaStreamDest.stream, {
-            mimeType: 'audio/webm'
-        });
+        this.#mediaRecorder = new MediaRecorder(this.#mediaStreamDest.stream);
 
         this.#mediaRecorder.ondataavailable = (event) => {
             if (event.data.size > 0) {
@@ -854,9 +841,8 @@ class AudioEngine extends EventTarget {
             this.#emit(AudioEvents.RECORDING_DATA, { blob });
         };
 
-        this.#mediaRecorder.start(100); // Collect data every 100ms
-        this.#emit(AudioEvents.RECORDING_START, {});
-        return true;
+        this.#mediaRecorder.start();
+        this.#emit(AudioEvents.RECORDING_START);
     }
 
     /**
@@ -865,241 +851,44 @@ class AudioEngine extends EventTarget {
     stopRecording() {
         if (this.#mediaRecorder && this.#mediaRecorder.state === 'recording') {
             this.#mediaRecorder.stop();
-            this.#emit(AudioEvents.RECORDING_STOP, {});
-            return true;
-        }
-        return false;
-    }
-
-    // ============================================
-    // AUDIO SLICER
-    // ============================================
-
-    /**
-     * Slice an AudioBuffer based on silence detection
-     * @param {AudioBuffer} buffer - Input buffer to slice
-     * @param {Object} options - Slicer options
-     * @returns {AudioBuffer[]} Array of sliced buffers
-     */
-    sliceBuffer(buffer, options = {}) {
-        const {
-            threshold = 0.01,      // RMS threshold for silence
-            minDuration = 0.05,    // Minimum silence duration (seconds)
-            windowSize = 0.01      // Analysis window (seconds)
-        } = options;
-
-        const sampleRate = buffer.sampleRate;
-        const windowSamples = Math.floor(windowSize * sampleRate);
-        const minSilenceSamples = Math.floor(minDuration * sampleRate);
-        const channelData = buffer.getChannelData(0); // Use first channel
-
-        const slicePoints = [];
-        let silenceStart = null;
-        let inSilence = false;
-
-        // Analyze RMS in windows
-        for (let i = 0; i < channelData.length; i += windowSamples) {
-            const windowEnd = Math.min(i + windowSamples, channelData.length);
-            const rms = this.#calculateRMS(channelData, i, windowEnd);
-
-            if (rms < threshold) {
-                if (!inSilence) {
-                    silenceStart = i;
-                    inSilence = true;
-                }
-            } else {
-                if (inSilence) {
-                    const silenceLength = i - silenceStart;
-                    if (silenceLength >= minSilenceSamples) {
-                        // Mark the middle of silence as a cut point
-                        slicePoints.push(silenceStart + Math.floor(silenceLength / 2));
-                    }
-                    inSilence = false;
-                }
-            }
-        }
-
-        // Create sliced buffers
-        if (slicePoints.length === 0) {
-            return [buffer]; // No silence detected, return original
-        }
-
-        const slicedBuffers = [];
-        let prevPoint = 0;
-
-        for (const point of slicePoints) {
-            if (point - prevPoint > windowSamples) {
-                slicedBuffers.push(this.#extractBufferSection(buffer, prevPoint, point));
-            }
-            prevPoint = point;
-        }
-
-        // Add final section
-        if (buffer.length - prevPoint > windowSamples) {
-            slicedBuffers.push(this.#extractBufferSection(buffer, prevPoint, buffer.length));
-        }
-
-        console.log(`✂️ Sliced buffer into ${slicedBuffers.length} parts`);
-        return slicedBuffers;
-    }
-
-    /**
-     * Calculate RMS of a sample range
-     */
-    #calculateRMS(data, start, end) {
-        let sum = 0;
-        for (let i = start; i < end; i++) {
-            sum += data[i] * data[i];
-        }
-        return Math.sqrt(sum / (end - start));
-    }
-
-    /**
-     * Extract a section of an AudioBuffer
-     */
-    #extractBufferSection(buffer, start, end) {
-        const length = end - start;
-        const newBuffer = this.#audioContext.createBuffer(
-            buffer.numberOfChannels,
-            length,
-            buffer.sampleRate
-        );
-
-        for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
-            const sourceData = buffer.getChannelData(channel);
-            const destData = newBuffer.getChannelData(channel);
-            for (let i = 0; i < length; i++) {
-                destData[i] = sourceData[start + i];
-            }
-        }
-
-        return newBuffer;
-    }
-
-    // ============================================
-    // MICROPHONE RECORDING
-    // ============================================
-
-    /**
-     * Record from microphone
-     * @param {number} maxDuration - Maximum recording duration in seconds
-     * @returns {Promise<AudioBuffer>}
-     */
-    async recordFromMicrophone(maxDuration = 10) {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mediaRecorder = new MediaRecorder(stream);
-            const chunks = [];
-
-            return new Promise((resolve, reject) => {
-                mediaRecorder.ondataavailable = (e) => {
-                    if (e.data.size > 0) chunks.push(e.data);
-                };
-
-                mediaRecorder.onstop = async () => {
-                    stream.getTracks().forEach(track => track.stop());
-                    const blob = new Blob(chunks, { type: 'audio/webm' });
-                    const arrayBuffer = await blob.arrayBuffer();
-                    const audioBuffer = await this.#audioContext.decodeAudioData(arrayBuffer);
-                    resolve(audioBuffer);
-                };
-
-                mediaRecorder.onerror = reject;
-
-                mediaRecorder.start();
-                setTimeout(() => {
-                    if (mediaRecorder.state === 'recording') {
-                        mediaRecorder.stop();
-                    }
-                }, maxDuration * 1000);
-            });
-        } catch (error) {
-            console.error('Microphone recording failed:', error);
-            throw error;
+            this.#emit(AudioEvents.RECORDING_STOP);
         }
     }
 
     // ============================================
-    // ANALYSER (for visualization)
-    // ============================================
-
-    /**
-     * Get frequency data for visualization
-     * @returns {Uint8Array}
-     */
-    getFrequencyData() {
-        if (!this.#analyser) return new Uint8Array(0);
-        const data = new Uint8Array(this.#analyser.frequencyBinCount);
-        this.#analyser.getByteFrequencyData(data);
-        return data;
-    }
-
-    /**
-     * Get time domain data for waveform
-     * @returns {Uint8Array}
-     */
-    getTimeDomainData() {
-        if (!this.#analyser) return new Uint8Array(0);
-        const data = new Uint8Array(this.#analyser.frequencyBinCount);
-        this.#analyser.getByteTimeDomainData(data);
-        return data;
-    }
-
-    // ============================================
-    // UTILITIES
+    // UTILS
     // ============================================
 
     /**
      * Emit custom event
      */
-    #emit(type, detail) {
+    #emit(type, detail = {}) {
         this.dispatchEvent(new CustomEvent(type, { detail }));
     }
 
     /**
-     * Get current audio context time
+     * Get current analyser data
      */
-    getCurrentTime() {
-        return this.#audioContext?.currentTime || 0;
+    getAnalyserData() {
+        if (!this.#analyser) return null;
+        const bufferLength = this.#analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        this.#analyser.getByteTimeDomainData(dataArray);
+        return dataArray;
     }
 
     /**
-     * Check if engine is ready
+     * Get frequency data
      */
-    get isReady() {
-        return this.#isInitialized;
-    }
-
-    /**
-     * Check if sequencer is playing
-     */
-    get isPlaying() {
-        return this.#isPlaying;
-    }
-
-    /**
-     * Get current step
-     */
-    get currentStep() {
-        return this.#currentStep;
-    }
-
-    /**
-     * Get loaded buffer count
-     */
-    get bufferCount() {
-        return this.#buffers.size;
-    }
-
-    /**
-     * Get buffer for a pad
-     */
-    getBuffer(padIndex) {
-        return this.#buffers.get(padIndex);
+    getFrequencyData() {
+        if (!this.#analyser) return null;
+        const bufferLength = this.#analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        this.#analyser.getByteFrequencyData(dataArray);
+        return dataArray;
     }
 }
 
-// ============================================
-// EXPORT SINGLETON
-// ============================================
-export default AudioEngine.getInstance();
+// Export singleton instance
+export const audioContext = AudioEngine.getInstance();
+export default AudioEngine;
