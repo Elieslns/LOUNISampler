@@ -1,9 +1,18 @@
 # LOUNISampler 2026
 
-**LOUNISampler** est un projet réalisé dans le cadre de l'UE "Web" de mon Master 1 Informatique à l'Université Côte d'Azur, sous la supervision de l'enseignant Michel BUFFA.
+**LOUNISampler** est un projet réalisé par **Elies LOUNIS** dans le cadre de l'UE "Web" de mon Master 1 Informatique à l'Université Côte d'Azur, sous la supervision de l'enseignant Michel BUFFA.
 
 
 ![Vue Principale LOUNISampler](docs/img/sampler_main_view.png)
+
+## Accès en Ligne
+
+Vous pouvez tester le projet directement sur Render via les liens suivants :
+
+*   **Logiciel Sampler** : [lounis-sampler.onrender.com](https://lounis-sampler.onrender.com)
+*   **Panneau d'Administration** : [lounis-sampler-admin.onrender.com](https://lounis-sampler-admin.onrender.com)
+
+*Note : Le premier chargement peut prendre quelques secondes (mise en route des services gratuits Render).*
 
 ## Fonctionnalités Clés
 
@@ -149,4 +158,4 @@ Le sampler est optimisé pour le jeu au clavier utilisant une configuration AZER
 *   **Rangée Basse (Pads 0-3)** : `W`, `X`, `C`, `V`
 
 ---
-*Réalisé pour le projet de Master 1 Info.*
+*Réalisé par Elies LOUNIS pour le projet de Master 1 Info.*
